@@ -1,0 +1,2 @@
+Please provide a code snippet in {{LANG}} in markdown format that achieves the following goals: {{GOAL}}.
+Return only the code itself, without any additional text or explanation or note.
