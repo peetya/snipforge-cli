@@ -10,7 +10,7 @@ builds:
       - windows
       - darwin
     ldflags:
-      - -s -w -X cmd.version={{ .Version }} -X cmd.commit={{ .Commit }} -X cmd.date={{ .Date }}
+      - -s -w -X github.com/peetya/snipforge-cli/cmd.version={{ .Version }} -X github.com/peetya/snipforge-cli/cmd.commit={{ .Commit }} -X github.com/peetya/snipforge-cli/cmd.date={{ .Date }}
 
 archives:
   - format: tar.gz
