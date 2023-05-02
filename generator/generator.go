@@ -3,13 +3,15 @@ package generator
 import (
 	"context"
 	"github.com/golang-commonmark/markdown"
+	"github.com/peetya/snipforge-cli/data"
 	"github.com/peetya/snipforge-cli/model"
 	"github.com/sashabaranov/go-openai"
+	"github.com/sirupsen/logrus"
 	"os"
 	"strings"
 )
 
-func GenerateCodeSnippet(req *model.GenerateRequest) (string, error) {
+func GenerateCodeSnippet(req *model.GenerateRequest, detectedLanguage *data.Language) (string, error) {
 	client := openai.NewClient(req.OpenAIKey)
 
 	systemPrompt, err := getSystemPrompt()
@@ -28,13 +30,33 @@ func GenerateCodeSnippet(req *model.GenerateRequest) (string, error) {
 			{Role: openai.ChatMessageRoleSystem, Content: systemPrompt},
 			{Role: openai.ChatMessageRoleUser, Content: userPrompt},
 		},
+		N: 1,
 	})
-
 	if err != nil {
 		return "", err
 	}
 
-	return parseCodeFromMarkdown(resp.Choices[0].Message.Content)
+	content := resp.Choices[0].Message.Content
+
+	logrus.WithFields(logrus.Fields{
+		"finishReason":     resp.Choices[0].FinishReason,
+		"promptTokens":     resp.Usage.PromptTokens,
+		"completionTokens": resp.Usage.CompletionTokens,
+		"totalTokens":      resp.Usage.TotalTokens,
+	}).Debug("Received GPT response")
+	logrus.WithField("content", content).Trace("Received OpenAI API response content")
+
+	parsedContent, err := parseCodeFromMarkdown(content)
+	if err != nil {
+		return "", err
+	}
+
+	if detectedLanguage != nil && detectedLanguage.Format != nil {
+		logrus.Debugf("Apply formatting for detected language: %s", detectedLanguage.Names[0])
+		parsedContent = detectedLanguage.Format(parsedContent)
+	}
+
+	return parsedContent, nil
 }
 
 func getSystemPrompt() (string, error) {

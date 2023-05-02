@@ -1,15 +1,28 @@
 package data
 
+import "strings"
+
+type FormatSnippet func(snippet string) string
+
 type Language struct {
 	Names             []string
 	PreferredFileName string
+	Format            FormatSnippet
 }
 
 var Languages = []Language{
-	{Names: []string{"PHP", "Symfony", "Laravel"}, PreferredFileName: "snippet.php"},
+	{Names: []string{"PHP", "Symfony", "Laravel"}, PreferredFileName: "snippet.php", Format: func(snippet string) string {
+		// Sometimes PHP opening tag is missing from snippets from OpenAI API
+		if !strings.HasPrefix(snippet, "<?php") {
+			snippet = "<?php\n\n" + snippet
+		}
+
+		return snippet
+	}},
 	{Names: []string{"Python", "Django"}, PreferredFileName: "snippet.py"},
-	{Names: []string{"Go"}, PreferredFileName: "snippet.go"},
+	{Names: []string{"Go", "Golang"}, PreferredFileName: "snippet.go"},
 	{Names: []string{"JavaScript", "JS", "Node", "NodeJS", "Express"}, PreferredFileName: "snippet.js"},
+	{Names: []string{"React"}, PreferredFileName: "snippet.jsx"},
 	{Names: []string{"TypeScript", "TS"}, PreferredFileName: "snippet.ts"},
 	{Names: []string{"Java"}, PreferredFileName: "Snippet.java"},
 	{Names: []string{"C#", "Csharp"}, PreferredFileName: "snippet.cs"},
