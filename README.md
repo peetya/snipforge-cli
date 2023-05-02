@@ -10,9 +10,14 @@
 ## Table of Contents
 
 - [Features](#features)
+- [Installation](#installation)
+  - [Binary Installation](#binary-installation)
+  - [Local Installation](#local-installation)
 - [Usage](#usage)
 - [Flags](#flags)
 - [Example](#example)
+  - [Basic example](#basic-example)
+  - [Advanced example](#advanced-example)
 - [Important Note on Generated Output](#important-note-on-generated-output)
 - [Contributing](#contributing)
 - [License](#license)
@@ -22,12 +27,46 @@
 - Leverages OpenAI's GPT technology for intelligent code snippet generation
 - Supports multiple programming and tooling languages
 - Customizable options to match your specific needs
+- Interactive mode for step-by-step guidance through the code generation process
 - Output code snippets to `stdout` or save them to a file
+
+## Installation
+
+### Binary Installation
+
+1. Download the appropriate binary for your operating system from the [latest release](https://github.com/peetya/snipforge-cli/releases/latest) page.
+2. Extract the downloaded archive and place the `snipforge` binary in a directory that is included in your system's `PATH`.
+3. Open a terminal and type `snipforge version` to confirm the installation was successful.
+
+### Local Installation
+
+If you prefer to run SnipForge from source, follow these steps:
+
+1. Clone the repository:
+```bash
+$ git clone https://github.com/peetya/snipforge-cli.git
+```
+
+2. Change into the `snipforge-cli` directory:
+```bash
+$ cd snipforge-cli
+```
+
+3. Install the necessary dependencies:
+```bash
+$ go mod download
+```
+
+4. Run:
+```bash
+$ go run main.go version
+```
 
 ## Usage
 
 To get started with **SnipForge**, install the CLI tool and run the `generate` command, providing the required flags and 
-options. 
+options. Alternatively, you can start the interactive mode by running the `generate` command without any flags, which 
+will guide you through the code generation process step-by-step.
 
 ```bash
 $ snipforge generate [flags]
@@ -36,7 +75,7 @@ $ snipforge generate [flags]
 For more information on available commands and flags, refer to the help output by running:
 
 ```bash
-$ snipforge --help
+$ snipforge generate --help
 ```
 
 ## Flags
@@ -112,6 +151,7 @@ Then it will generate the following code snippet for you in `src/Controller/Api/
 
 ```php
 <?php
+
 // src/Controller/Api/V1/UserController.php
 
 namespace App\Controller\Api\V1;
