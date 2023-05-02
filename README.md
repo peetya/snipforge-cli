@@ -157,8 +157,8 @@ double-check the results to ensure correctness.
 
 ## Contributing
 
-SnipForge is an open-source project, and I welcome contributions from developers like you! Feel free to submit issues, 
-suggest new features, or create pull requests to help improve the project. I appreciate your support and collaboration. 
+SnipForge is an open-source project, and we welcome contributions from developers like you! Feel free to submit issues, 
+suggest new features, or create pull requests to help improve the project. We appreciate your support and collaboration. 
 :heart:
 
 ## License
