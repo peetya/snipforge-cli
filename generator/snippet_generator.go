@@ -7,28 +7,17 @@ import (
 	"github.com/peetya/snipforge-cli/model"
 	"github.com/sashabaranov/go-openai"
 	"github.com/sirupsen/logrus"
-	"os"
 	"strings"
 )
 
 func GenerateCodeSnippet(req *model.GenerateRequest, detectedLanguage *data.Language) (string, error) {
 	client := openai.NewClient(req.OpenAIKey)
 
-	systemPrompt, err := getSystemPrompt()
-	if err != nil {
-		return "", err
-	}
-
-	userPrompt, err := getUserPrompt(req)
-	if err != nil {
-		return "", err
-	}
-
 	resp, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
 		Model: req.OpenAIModel,
 		Messages: []openai.ChatCompletionMessage{
-			{Role: openai.ChatMessageRoleSystem, Content: systemPrompt},
-			{Role: openai.ChatMessageRoleUser, Content: userPrompt},
+			{Role: openai.ChatMessageRoleSystem, Content: getSystemPrompt()},
+			{Role: openai.ChatMessageRoleUser, Content: getUserPrompt(req)},
 		},
 		N: 1,
 	})
@@ -59,24 +48,18 @@ func GenerateCodeSnippet(req *model.GenerateRequest, detectedLanguage *data.Lang
 	return parsedContent, nil
 }
 
-func getSystemPrompt() (string, error) {
-	c, err := os.ReadFile("./prompts/system_prompt.txt")
-	if err != nil {
-		return "", err
-	}
-	return string(c), nil
-
+func getSystemPrompt() string {
+	return `You are a Code Snippet Generator called SnipForge.
+You are given a goal and a programming language.
+You generate code snippets that achieve the goal in the given programming language.`
 }
 
-func getUserPrompt(req *model.GenerateRequest) (string, error) {
-	c, err := os.ReadFile("./prompts/user_prompt.txt")
-	if err != nil {
-		return "", err
-	}
-	prompt := string(c)
+func getUserPrompt(req *model.GenerateRequest) string {
+	prompt := `Please provide a code snippet in {{LANG}} in markdown format that achieves the following goals: {{GOAL}}.
+Return only the code itself, without any additional text or explanation or note.`
 	prompt = strings.Replace(prompt, "{{LANG}}", req.Language, -1)
 	prompt = strings.Replace(prompt, "{{GOAL}}", req.Goal, -1)
-	return prompt, nil
+	return prompt
 }
 
 func parseCodeFromMarkdown(mdContent string) (string, error) {

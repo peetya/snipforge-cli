@@ -45,7 +45,8 @@ var generateCmd = &cobra.Command{
 		}
 
 		if isInteractive && !isQuiet {
-			logrus.Info("Welcome to SnipForge's interactive mode! In this mode, you will be prompted to provide the necessary information for generating a code snippet.\n")
+			logrus.Info("Welcome to SnipForge's interactive mode! " +
+				"In this mode, you will be prompted to provide the necessary information for generating a code snippet.\n")
 		}
 
 		if goal == "" {
@@ -156,7 +157,8 @@ func promptGoals() {
 	var goals []string
 	i := 1
 
-	logrus.Info("First, please enter your goals one by one. These goals will help SnipForge understand the functionality you want in your code snippet. After entering a goal, press Enter to input the next one. When you're done, simply press Enter on an empty line to proceed to the next step.")
+	logrus.Info("First, please enter your goals one by one. These goals will help SnipForge understand the functionality you want in your code snippet. " +
+		"After entering a goal, press Enter to input the next one. When you're done, simply press Enter on an empty line to proceed to the next step.")
 	logrus.Info("Enter your goals:")
 
 	for {
