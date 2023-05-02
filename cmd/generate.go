@@ -33,8 +33,8 @@ var (
 
 var generateCmd = &cobra.Command{
 	Use:   "generate",
-	Short: "Generate a code snippet based on a given description and programming or tooling language",
-	Long: `Generate a code snippet based on a given description and programming or tooling language
+	Short: "Generate a code snippet based on the required description and programming or tooling language",
+	Long: `Generate a code snippet based on the required description and programming or tooling language
 
   Find more information at: https://github.com/peetya/snipforge-cli`,
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -129,7 +129,7 @@ var generateCmd = &cobra.Command{
 			return err
 		}
 
-		logrus.Infof("Snippet successfully generated and saved to %s\n", output)
+		logrus.Infof("The snippet is successfully generated and saved to %s\n", output)
 		logrus.Warn("Please review the generated code snippet before using it in your project!")
 
 		return nil
@@ -204,7 +204,7 @@ func promptLanguage() {
 
 func promptVersion() {
 	prompt := promptui.Prompt{
-		Label: "LanguageVersion (optional)",
+		Label: "Language Version (optional)",
 	}
 
 	res, err := prompt.Run()

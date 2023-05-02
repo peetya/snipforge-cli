@@ -10,8 +10,8 @@ var logLevel string
 
 var rootCmd = &cobra.Command{
 	Use:   "snipforge",
-	Short: "SnipForge - AI Code Snippet Generator",
-	Long: `SnipForge - AI Code Snippet Generator
+	Short: "SnipForge - AI-Powered Code Snippet Generator",
+	Long: `SnipForge - AI-Powered Code Snippet Generator
 
   Find more information at: https://github.com/peetya/snipforge-cli`,
 }

@@ -26,9 +26,9 @@
 
 - Leverages OpenAI's GPT technology for intelligent code snippet generation
 - Supports multiple programming and tooling languages
-- Customizable options to match your specific needs
-- Interactive mode for step-by-step guidance through the code generation process
-- Output code snippets to `stdout` or save them to a file
+- Matches your specific needs with customizable options
+- Guides you through the code generation process in interactive mode step-by-step 
+- Outputs code snippets to `stdout` or saves them to a file
 
 ## Installation
 

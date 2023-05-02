@@ -32,7 +32,7 @@ func GenerateCodeSnippet(req *model.GenerateRequest, detectedLanguage *data.Lang
 		"promptTokens":     resp.Usage.PromptTokens,
 		"completionTokens": resp.Usage.CompletionTokens,
 		"totalTokens":      resp.Usage.TotalTokens,
-	}).Debug("Received GPT response")
+	}).Debug("Received OpenAI API response")
 	logrus.WithField("content", content).Trace("Received OpenAI API response content")
 
 	parsedContent, err := parseCodeFromMarkdown(content)
