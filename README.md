@@ -177,12 +177,8 @@ class UserController extends AbstractController
 
         $users = $this->userRepository->getPaginatedUsers($page, $limit);
 
-        $serializer = $this->get('serializer');
-        $context = [
-            'groups' => ['user'],
-        ];
-
-        $content = $serializer->serialize(['data' => $users], $request->getPreferredFormat(), $context);
+        $serializer = $this->container->get('serializer');
+        $content = $serializer->serialize(['data' => $users], $request->getPreferredFormat(), ['groups' => ['user']]
 
         return new Response($content, 200, ['Content-Type' => $request->getMimeType($request->getPreferredFormat())]);
     }
