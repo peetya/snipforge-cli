@@ -15,8 +15,7 @@ import (
 type Model struct {
 	navigator                   *Navigator
 	spinnerStart                time.Time
-	isPreparationStarted        bool
-	isPreparationDone           bool
+	isGenerationStarted         bool
 	isCodeSnippetGenerationDone bool
 	isCodeSnippetSavingDone     bool
 	detectedLanguage            *data.Language
@@ -36,8 +35,7 @@ type Model struct {
 
 func InitializeModel(req *model.GenerateRequest) *Model {
 	m := &Model{
-		isPreparationStarted:        false,
-		isPreparationDone:           false,
+		isGenerationStarted:         false,
 		isCodeSnippetGenerationDone: false,
 		isCodeSnippetSavingDone:     false,
 
@@ -66,23 +64,14 @@ func (pm *Model) Init() tea.Cmd {
 }
 
 func (pm *Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if pm.navigator.CurrentStep == Loading && !pm.isPreparationStarted {
+	if pm.navigator.CurrentStep == Loading && !pm.isGenerationStarted {
 		var spinnerCmd tea.Cmd
 		pm.spinnerLoading, spinnerCmd = pm.spinnerLoading.Update(msg)
-		pm.isPreparationStarted = true
+		pm.isGenerationStarted = true
 		return pm, tea.Batch(spinnerCmd, pm.getExecutionCmd())
 	}
 
 	switch msg := msg.(type) {
-	case prepareMsg:
-		if msg.Err != nil {
-			log.Fatal(msg.Err)
-		}
-
-		pm.isPreparationDone = true
-
-		return pm, nil
-
 	case generateCodeSnippetMsg:
 		if msg.Err != nil {
 			log.Fatal(msg.Err)
@@ -166,10 +155,6 @@ func (pm *Model) View() string {
 		view += pm.openaiModelInputModel.View()
 
 	case Loading, End:
-		prepTxt := fmt.Sprintf("%s Preparing output folder...", pm.spinnerLoading.View())
-		if pm.isPreparationDone {
-			prepTxt = "✅  Output folder is ready!"
-		}
 		genTxt := fmt.Sprintf("%s Generating code snippet...", pm.spinnerLoading.View())
 		if pm.isCodeSnippetGenerationDone {
 			genTxt = "✅  Code snippet is generated!"
@@ -180,18 +165,16 @@ func (pm *Model) View() string {
 		}
 
 		if pm.generateRequest.IsStdout {
-			prepTxt = "✅  Output folder generation is skipped!"
 			saveTxt = "✅  Code snippet saving is skipped!"
 		}
 
 		view += fmt.Sprintf(
-			"%s\n%s\n%s\n\n",
-			prepTxt,
+			"%s\n%s\n\n",
 			genTxt,
 			saveTxt,
 		)
 
-		if pm.isPreparationDone && pm.isCodeSnippetGenerationDone && pm.isCodeSnippetSavingDone {
+		if pm.isCodeSnippetGenerationDone && pm.isCodeSnippetSavingDone {
 			if pm.generateRequest.IsDryRun {
 				view += fmt.Sprintf("Dry run is completed! Your request passed all checks. No code snippet is generated.\n")
 			} else {
@@ -218,11 +201,10 @@ func (pm *Model) View() string {
 }
 
 func (pm *Model) getExecutionCmd() tea.Cmd {
-	pc := &prepareCommand{PromptModel: pm}
 	gc := &generateCommand{PromptModel: pm}
 	sc := &saveCommand{PromptModel: pm}
 
-	return tea.Sequence(pc.Prepare, gc.GenerateCodeSnippet, sc.SaveCodeSnippet)
+	return tea.Sequence(gc.GenerateCodeSnippet, sc.SaveCodeSnippet)
 }
 
 func (pm *Model) initNonInteractive() {
