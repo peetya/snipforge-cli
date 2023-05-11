@@ -6,46 +6,55 @@ import (
 	"github.com/peetya/snipforge-cli/data"
 	"github.com/peetya/snipforge-cli/model"
 	"github.com/sashabaranov/go-openai"
-	"github.com/sirupsen/logrus"
 	"strings"
 )
 
-func GenerateCodeSnippet(req *model.GenerateRequest, detectedLanguage *data.Language) (string, error) {
+type TokenUsage struct {
+	TotalTokens      int
+	PromptTokens     int
+	CompletionTokens int
+}
+
+func GenerateCodeSnippet(req *model.GenerateRequest, detectedLanguage *data.Language) (string, TokenUsage, error) {
 	client := openai.NewClient(req.OpenAIKey)
 
-	resp, err := client.CreateChatCompletion(context.Background(), openai.ChatCompletionRequest{
+	ccr := openai.ChatCompletionRequest{
 		Model: req.OpenAIModel,
 		Messages: []openai.ChatCompletionMessage{
 			{Role: openai.ChatMessageRoleSystem, Content: getSystemPrompt()},
 			{Role: openai.ChatMessageRoleUser, Content: getUserPrompt(req)},
 		},
 		N: 1,
-	})
+	}
+
+	if req.OpenAIMaxTokens > 0 {
+		ccr.MaxTokens = req.OpenAIMaxTokens
+	}
+
+	if req.OpenAITemperature > 0 {
+		ccr.Temperature = req.OpenAITemperature
+	}
+
+	resp, err := client.CreateChatCompletion(context.Background(), ccr)
 	if err != nil {
-		return "", err
+		return "", TokenUsage{}, err
 	}
 
 	content := resp.Choices[0].Message.Content
-
-	logrus.WithFields(logrus.Fields{
-		"finishReason":     resp.Choices[0].FinishReason,
-		"promptTokens":     resp.Usage.PromptTokens,
-		"completionTokens": resp.Usage.CompletionTokens,
-		"totalTokens":      resp.Usage.TotalTokens,
-	}).Debug("Received OpenAI API response")
-	logrus.WithField("content", content).Trace("Received OpenAI API response content")
-
 	parsedContent, err := parseCodeFromMarkdown(content)
 	if err != nil {
-		return "", err
+		return "", TokenUsage{}, err
 	}
 
 	if detectedLanguage != nil && detectedLanguage.Format != nil {
-		logrus.Debugf("Apply formatting for detected language: %s", detectedLanguage.Names[0])
 		parsedContent = detectedLanguage.Format(parsedContent)
 	}
 
-	return parsedContent, nil
+	return parsedContent, TokenUsage{
+		TotalTokens:      resp.Usage.TotalTokens,
+		PromptTokens:     resp.Usage.PromptTokens,
+		CompletionTokens: resp.Usage.CompletionTokens,
+	}, nil
 }
 
 func getSystemPrompt() string {

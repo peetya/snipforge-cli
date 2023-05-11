@@ -1,12 +1,17 @@
 package data
 
-import "strings"
+import (
+	"github.com/adrg/strutil"
+	"github.com/adrg/strutil/metrics"
+	"strings"
+)
 
 type FormatSnippet func(snippet string) string
 
 type Language struct {
 	Names             []string
 	PreferredFileName string
+	PreferredVersion  string
 	Format            FormatSnippet
 }
 
@@ -18,7 +23,7 @@ var Languages = []Language{
 		}
 
 		return snippet
-	}},
+	}, PreferredVersion: "8.2"},
 	{Names: []string{"Python", "Django"}, PreferredFileName: "snippet.py"},
 	{Names: []string{"Go", "Golang"}, PreferredFileName: "snippet.go"},
 	{Names: []string{"JavaScript", "JS", "Node", "NodeJS", "Express"}, PreferredFileName: "snippet.js"},
@@ -42,12 +47,9 @@ var Languages = []Language{
 	{Names: []string{"Elixir"}, PreferredFileName: "snippet.ex"},
 	{Names: []string{"Clojure"}, PreferredFileName: "snippet.clj"},
 	{Names: []string{"Erlang"}, PreferredFileName: "snippet.erl"},
-	{Names: []string{"OCaml"}, PreferredFileName: "snippet.ml"},
-	{Names: []string{"Racket"}, PreferredFileName: "snippet.rkt"},
 	{Names: []string{"F#"}, PreferredFileName: "snippet.fs"},
 	{Names: []string{"Bash", "Shell", "sh"}, PreferredFileName: "snippet.sh"},
-	{Names: []string{"PowerShell"}, PreferredFileName: "snippet.ps1"},
-	{Names: []string{"SQL"}, PreferredFileName: "snippet.sql"},
+	{Names: []string{"SQL", "MySQL", "PGSQL", "Postgres", "PostgreSQL"}, PreferredFileName: "snippet.sql"},
 	{Names: []string{"HTML"}, PreferredFileName: "snippet.html"},
 	{Names: []string{"CSS"}, PreferredFileName: "snippet.css"},
 	{Names: []string{"JSON"}, PreferredFileName: "snippet.json"},
@@ -56,12 +58,31 @@ var Languages = []Language{
 	{Names: []string{"Markdown", "MD"}, PreferredFileName: "snippet.md"},
 	{Names: []string{"Dockerfile"}, PreferredFileName: "Dockerfile"},
 	{Names: []string{"Makefile"}, PreferredFileName: "Makefile"},
-	{Names: []string{"INI"}, PreferredFileName: "snippet.ini"},
-	{Names: []string{"TOML"}, PreferredFileName: "snippet.toml"},
 	{Names: []string{"CSV"}, PreferredFileName: "snippet.csv"},
 	{Names: []string{"Terraform"}, PreferredFileName: "snippet.tf"},
-	{Names: []string{"HCL"}, PreferredFileName: "snippet.hcl"},
 	{Names: []string{"GraphQL"}, PreferredFileName: "snippet.gql"},
-	{Names: []string{"HTTP"}, PreferredFileName: "snippet.http"},
-	{Names: []string{"Shell"}, PreferredFileName: "snippet.sh"},
+}
+
+func DetectLanguage(input string) *Language {
+	var detectedLanguage Language
+	var maxSimilarity float64
+
+	similarityScoreThreshold := 0.5
+
+	for _, lang := range Languages {
+		for _, name := range lang.Names {
+			similarity := strutil.Similarity(strings.ToLower(input), strings.ToLower(name), metrics.NewLevenshtein())
+
+			if similarity > maxSimilarity {
+				maxSimilarity = similarity
+				detectedLanguage = lang
+			}
+		}
+	}
+
+	if maxSimilarity < similarityScoreThreshold {
+		return nil
+	}
+
+	return &detectedLanguage
 }

@@ -83,16 +83,19 @@ $ snipforge generate --help
 Here's a detailed explanation of the available flags for the `generate` command:
 
 ```bash
--g, --goal:             The functionality description for the code snippet
--l, --language:         The programming or tooling language to generate code in (e.g., PHP, Golang, etc.)
--v, --language-version: The version of the programming or tooling language to generate code for (if applicable)
--o, --output:           The output file path for the generated code snippet
---output-chmod:         The chmod value to apply to the output file (default 644)
---stdout:               Print the generated code snippet to stdout instead of saving to a file
--k, --openai-key:       The OpenAI API key
--m, --openai-model:     The OpenAI model to use (default "gpt-3.5-turbo")
--q, --quiet:            Suppress all output except for the generated code snippet
--d, --dry-run:          Do not generate a code snippet, only print the generated description
+  -d, --dry-run                      do not generate a code snippet, only print the generated description
+  -g, --goal string                  the functionality description for the code snippet
+  -h, --help                         help for generate
+  -l, --language string              the programming or tooling language to generate code in (e.g. PHP, Golang, etc...)
+  -v, --language-version string      the version of the programming or tooling language to generate code for (if applicable)
+  -k, --openai-key string            the OpenAI API key
+      --openai-max-tokens int        the maximum number of tokens to generate
+  -m, --openai-model string          the OpenAI model to use
+      --openai-temperature float32   the sampling temperature for the OpenAI model (between 0.0 and 2.0)
+  -o, --output string                the output file path for the generated code snippet
+  -q, --quiet                        suppress all output except for the generated code snippet
+      --stdout                       print the generated code snippet to isStdout instead of saving to a file
+
 ```
 
 ## Example
@@ -126,25 +129,37 @@ $ snipforge generate
 First, we need to define a set of goals that will be used to generate the snippet.
 
 ```
-Goal #1: A controller that returns a list of users via the "/api/v1/users" endpoint
-Goal #2: The output format can be changed via content negotiation
-Goal #3: Support pagination using the page and limit query parameters
-Goal #4: Read the users from the injected UserRepositoryInterface
-Goal #5: The controller must follow the PSR-12 coding standard
-Goal #6: The controller must follow the PSR-4 autoloading standard
+What are your goals?
+
+┃  1 A controller that returns a list of users via the "/api/v1/users" endpoint                     
+┃  2 The output format can be changed via content negotiaton                                        
+┃  3 Support pagination using the page and limit query parameters                                   
+┃  4 Read the users from the injected UserRepositoryInterface                                       
+┃  5 The controller must follow PSR-4 and PSR-12 standards                                          
+
 ```
 
 Next, we need to define the programming language and version to generate the snippet for.
 
 ```
-Language: Symfony
-LanguageVersion (optional): 6
+Which programming or tooling language do you want to use?
+
+> Symfony 
+```
+
+```
+Which version of PHP do you want to use? (optional)
+
+> 6 
 ```
 
 Then we need to define the output path:
 
 ```
-Output file path: src/Controller/Api/V1/UserController.php
+Where do you want to save the snippet? 
+
+> src/Controller/Api/V1/UserController.php 
+
 ```
 
 Then it will generate the following code snippet for you in `src/Controller/Api/V1/UserController.php`:
