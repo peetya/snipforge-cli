@@ -6,6 +6,7 @@
 > snippets for various programming and tooling languages based on a given description. It aims to save time and effort 
 > for developers by providing a convenient way to generate code on-demand.
 
+![Demo](./docs/demo.gif)
 
 ## Table of Contents
 
@@ -136,7 +137,6 @@ What are your goals?
 ┃  3 Support pagination using the page and limit query parameters                                   
 ┃  4 Read the users from the injected UserRepositoryInterface                                       
 ┃  5 The controller must follow PSR-4 and PSR-12 standards                                          
-
 ```
 
 Next, we need to define the programming language and version to generate the snippet for.
@@ -159,7 +159,6 @@ Then we need to define the output path:
 Where do you want to save the snippet? 
 
 > src/Controller/Api/V1/UserController.php 
-
 ```
 
 Then it will generate the following code snippet for you in `src/Controller/Api/V1/UserController.php`:
